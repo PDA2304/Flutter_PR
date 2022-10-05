@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:path/path.dart';
 import 'package:pr2/common/data_base_request.dart';
-import 'package:pr2/data/model/role.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 
 class DataBaseHelper {
   static final DataBaseHelper instance = DataBaseHelper._instance();
@@ -13,7 +12,8 @@ class DataBaseHelper {
 
   late final Directory _appDocumentDirectory;
   late final String _pathDB;
-  late final Database database;
+  late final Database dataBase;
+  int _version = 1;
 
   Future<void> init() async {
     _appDocumentDirectory =
@@ -21,30 +21,20 @@ class DataBaseHelper {
 
     _pathDB = join(_appDocumentDirectory.path, 'booksstore.db');
 
-    if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
     } else {
-      database = await openDatabase(
+      dataBase = await openDatabase(
         _pathDB,
-        version: 1,
-        onCreate: (db, version) async {
-          await onCreateTable(db);
-        },
+        version: _version,
+        onCreate: (db, version) {},
       );
     }
   }
 
   Future<void> onCreateTable(Database db) async {
     for (var i = 0; i < DataBaseRequest.tableList.length; i++) {
-      db.execute(DataBaseRequest.tableCreateList[i]);
+      await db.execute(DataBaseRequest.createTableList[i]);
     }
-  }
 
-  Future<void> onInitTable(Database db) async {
-    try {
-      db.insert(DataBaseRequest.tableRole, Role(role: 'Администратор').toMap());
-      db.insert(DataBaseRequest.tableRole, Role(role: 'Пользователя').toMap());
-    } on DatabaseException catch (e) {
-      print(e.getResultCode());
-    }
   }
 }

@@ -1,5 +1,7 @@
-/// Запросы к базе данных
 abstract class DataBaseRequest {
+  /// Таблица Роли
+  ///
+  /// Поля таблицы: Название роли
   static const String tableRole = 'Role';
 
   /// Таблица Пользователи
@@ -7,12 +9,9 @@ abstract class DataBaseRequest {
   /// Поля таблицы: Логин, Пароль, Роль
   static const String tableUsers = 'Users';
 
-  static const List<String> tableList = [
-    tableRole,
-    tableUsers,
-  ];
+  static const List<String> tableList = [tableRole, tableUsers];
 
-  static const List<String> tableCreateList = [
+  static const List<String> createTableList = [
     _createTableRole,
     _createTableUsers
   ];
@@ -24,7 +23,4 @@ abstract class DataBaseRequest {
   /// Запрос для создания таблицы Users
   static const String _createTableUsers =
       'CREATE TABLE "$tableUsers" ("id"	INTEGER,"login"	TEXT NOT NULL UNIQUE,"password"	TEXT NOT NULL,"id_role"	INTEGER,FOREIGN KEY("id_role") REFERENCES "Role"("id"),PRIMARY KEY("id"))';
-
-
-
 }
