@@ -24,4 +24,7 @@ abstract class DataBaseRequest {
   /// Запрос для создания таблицы Users
   static const String _createTableUsers =
       'CREATE TABLE "$tableUsers" ("id"	INTEGER,"login"	TEXT NOT NULL UNIQUE,"password"	TEXT NOT NULL,"id_role"	INTEGER,FOREIGN KEY("id_role") REFERENCES "Role"("id"),PRIMARY KEY("id"))';
+
+
+
 }
