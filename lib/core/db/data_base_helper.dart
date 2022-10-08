@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:pr2/common/data_base_request.dart';
+import 'package:pr2/data/model/role.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
@@ -13,7 +14,7 @@ class DataBaseHelper {
   late final Directory _appDocumentDirectory;
   late final String _pathDB;
   late final Database dataBase;
-  int _version = 1;
+  final int _version = 1;
 
   Future<void> init() async {
     _appDocumentDirectory =
@@ -22,19 +23,49 @@ class DataBaseHelper {
     _pathDB = join(_appDocumentDirectory.path, 'booksstore.db');
 
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      /// todo
     } else {
       dataBase = await openDatabase(
         _pathDB,
         version: _version,
+        onUpgrade: (db, oldVersion, newVersion) => onUpdateTable(db),
         onCreate: (db, version) {},
       );
     }
   }
 
+  Future<void> onUpdateTable(Database db) async {
+    var tables = await db.rawQuery('SELECT name FROM sqlite_master;');
+
+    for (var table in DataBaseRequest.tableList) {
+      if (tables.contains(table)) {
+        db.execute(DataBaseRequest.deleteTable(table));
+      }
+    }
+  }
+
   Future<void> onCreateTable(Database db) async {
-    for (var i = 0; i < DataBaseRequest.tableList.length; i++) {
-      await db.execute(DataBaseRequest.createTableList[i]);
+    for (var table in DataBaseRequest.createTableList) {
+      await db.execute(table);
     }
 
+    await onInitTable(db);
+  }
+
+  Future<void> onInitTable(Database db) async {
+    try {
+      db.insert(DataBaseRequest.tableRole, Role(role: 'Администратор').toMap());
+      db.insert(DataBaseRequest.tableRole, Role(role: 'Пользователь').toMap());
+    } on DatabaseException catch (e) {}
+  }
+
+  Future<void> onDropDataBase() async {
+    dataBase.close();
+
+    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      /// todo
+    } else {
+      await deleteDatabase(_pathDB);
+    }
   }
 }

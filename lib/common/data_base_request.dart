@@ -1,4 +1,7 @@
 abstract class DataBaseRequest {
+  /// Запрос для удаления таблиц
+  static String deleteTable(String table) => 'DROP TABLE $table';
+
   /// Таблица Роли
   ///
   /// Поля таблицы: Название роли
