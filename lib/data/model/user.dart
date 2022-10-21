@@ -1,3 +1,4 @@
+import 'package:pr2/core/crypto/crypto.dart';
 import 'package:pr2/domain/entity/role_entity.dart';
 import 'package:pr2/domain/entity/user_entity.dart';
 
@@ -12,7 +13,7 @@ class User extends UserEntity {
   Map<String, dynamic> toMap() {
     return {
       'login': login,
-      'password': password,
+      'password': Crypto.crypto(password),
       'id_role': idRole.id,
     };
   }

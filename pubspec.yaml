@@ -46,6 +46,8 @@ dependencies:
   # Добавляет в программу функциональное программирование
   dartz: ^0.10.1
 
+  crypto: ^3.0.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

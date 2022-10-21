@@ -12,12 +12,29 @@ class FailureDB extends Failure {
     switch (getResultCode) {
       case 1555:
         {
-          return AuthPasswordFailure();
+          return InsertFailure();
         }
+        
       default:
-        return AuthPasswordFailure();
+        return DefaultFailure();
     }
   }
+}
+
+class DefaultFailure implements Failure {
+  @override
+  int code = 0;
+
+  @override
+  String errorMessage = 'Неизвестная ошибка';
+}
+
+class InsertFailure implements Failure {
+  @override
+  int code = 1555;
+
+  @override
+  String errorMessage = 'Такие данные уже есть в базе данных';
 }
 
 class AuthPasswordFailure implements Failure {
