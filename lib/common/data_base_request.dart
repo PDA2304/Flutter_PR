@@ -1,22 +1,17 @@
 abstract class DataBaseRequest {
-  /// Запрос для удаления таблиц
+  static const String tableRole = 'role';
+  static const String tableUser = 'user';
+
   static String deleteTable(String table) => 'DROP TABLE $table';
 
-  /// Таблица Роли
-  ///
-  /// Поля таблицы: Название роли
-  static const String tableRole = 'Role';
+  static const List<String> tableList = [
+    tableRole,
+    tableUser,
+  ];
 
-  /// Таблица Пользователи
-  ///
-  /// Поля таблицы: Логин, Пароль, Роль
-  static const String tableUsers = 'Users';
-
-  static const List<String> tableList = [tableRole, tableUsers];
-
-  static const List<String> createTableList = [
+  static const List<String> tableCreateList = [
     _createTableRole,
-    _createTableUsers
+    _createTableUsers,
   ];
 
   /// Запрос для создания таблицы Role
@@ -25,5 +20,5 @@ abstract class DataBaseRequest {
 
   /// Запрос для создания таблицы Users
   static const String _createTableUsers =
-      'CREATE TABLE "$tableUsers" ("id"	INTEGER,"login"	TEXT NOT NULL UNIQUE,"password"	TEXT NOT NULL,"id_role"	INTEGER,FOREIGN KEY("id_role") REFERENCES "Role"("id"),PRIMARY KEY("id"))';
+      'CREATE TABLE "$tableUser" ("id"	INTEGER,"login"	TEXT NOT NULL UNIQUE,"password"	TEXT NOT NULL,"id_role"	INTEGER,FOREIGN KEY("id_role") REFERENCES "Role"("id") ON DELETE CASCADE,PRIMARY KEY("id" AUTOINCREMENT) )';
 }

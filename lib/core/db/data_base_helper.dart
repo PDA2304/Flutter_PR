@@ -1,9 +1,8 @@
 import 'dart:io';
 
-import 'package:path/path.dart';
 import 'package:pr2/common/data_base_request.dart';
-import 'package:pr2/data/model/role.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
 class DataBaseHelper {
@@ -11,61 +10,49 @@ class DataBaseHelper {
 
   DataBaseHelper._instance();
 
-  late final Directory _appDocumentDirectory;
-  late final String _pathDB;
-  late final Database dataBase;
   final int _version = 1;
+  late final String _pathDB;
+  late final Directory _appDocumentDirectory;
+  late final Database database;
 
-  Future<void> init() async {
+  init() async {
     _appDocumentDirectory =
         await path_provider.getApplicationDocumentsDirectory();
 
-    _pathDB = join(_appDocumentDirectory.path, 'booksstore.db');
+    _pathDB = join(_appDocumentDirectory.path, 'test.db');
 
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
-      /// todo
+    
     } else {
-      dataBase = await openDatabase(
+      database = await openDatabase(
         _pathDB,
         version: _version,
+        onCreate: (db, version) => onCreateTable(db),
         onUpgrade: (db, oldVersion, newVersion) => onUpdateTable(db),
-        onCreate: (db, version) {},
       );
     }
   }
 
   Future<void> onUpdateTable(Database db) async {
-    var tables = await db.rawQuery('SELECT name FROM sqlite_master;');
+    var tables = await db.rawQuery('SELECT name FROM sqlite_master');
 
-    for (var table in DataBaseRequest.tableList) {
-      if (tables.contains(table)) {
-        db.execute(DataBaseRequest.deleteTable(table));
+    for (var table in DataBaseRequest.tableList.reversed) {
+      if (tables.where((element) => element['name'] == table).isNotEmpty) {
+        await db.execute(DataBaseRequest.deleteTable(table));
       }
     }
+
+    await onCreateTable(db);
   }
 
   Future<void> onCreateTable(Database db) async {
-    for (var table in DataBaseRequest.createTableList) {
-      await db.execute(table);
+    for (var tableCreate in DataBaseRequest.tableCreateList) {
+      await db.execute(tableCreate);
     }
-
-    await onInitTable(db);
-  }
-
-  Future<void> onInitTable(Database db) async {
-    try {
-      db.insert(DataBaseRequest.tableRole, Role(role: 'Администратор').toMap());
-      db.insert(DataBaseRequest.tableRole, Role(role: 'Пользователь').toMap());
-    } on DatabaseException catch (e) {}
   }
 
   Future<void> onDropDataBase() async {
-    dataBase.close();
-
-    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
-      /// todo
-    } else {
-      await deleteDatabase(_pathDB);
-    }
+    database.close();
+    deleteDatabase(_pathDB);
   }
 }
