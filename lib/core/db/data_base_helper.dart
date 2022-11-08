@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:pr2/common/data_base_request.dart';
+import 'package:pr2/data/model/role.dart';
+import 'package:pr2/domain/entity/role_entity.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
@@ -22,7 +24,6 @@ class DataBaseHelper {
     _pathDB = join(_appDocumentDirectory.path, 'test.db');
 
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
-    
     } else {
       database = await openDatabase(
         _pathDB,
@@ -49,6 +50,19 @@ class DataBaseHelper {
     for (var tableCreate in DataBaseRequest.tableCreateList) {
       await db.execute(tableCreate);
     }
+
+    await onInitTable(db);
+  }
+
+  Future<void> onInitTable(Database db) async {
+    try {
+      for (var element in RoleEnum.values) {
+        db.insert(
+          DataBaseRequest.tableRole,
+          Role(name: element.name).toMap(),
+        );
+      }
+    } on DatabaseException catch (error) {}
   }
 
   Future<void> onDropDataBase() async {
