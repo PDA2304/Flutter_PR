@@ -1,6 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter_application_1/common/data_base_request.dart';
+import 'package:flutter_application_1/data/model/role.dart';
+import 'package:flutter_application_1/data/model/user.dart';
+import 'package:flutter_application_1/domain/entity/role_enitty.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
@@ -32,13 +35,44 @@ class DataBaseHelper {
     }
   }
 
-  void onCreateTable(Database db) async {
+  Future<void> onUpdateTable(Database db) async {
+    var tables = await db.rawQuery('SELECT name FROM sqlite_master');
+
+    for (var table in DataBaseRequest.tableList.reversed) {
+      if (tables.where((element) => element['name'] == table).isNotEmpty) {
+        await db.execute(DataBaseRequest.deleteTable(table));
+      }
+    }
+
+    await onCreateTable(db);
+  }
+
+  Future<void> onCreateTable(Database db) async {
     for (var tableCreate in DataBaseRequest.tableCreateList) {
       await db.execute(tableCreate);
     }
   }
 
-  void onDropDataBase() async {
+  Future<void> onInitTable(Database db) async {
+    try {
+      for (var element in RoleEnum.values) {
+        db.insert(DataBaseRequest.tableRole, Role(role: element.name).toMap());
+      }
+
+      db.insert(
+        DataBaseRequest.tableUser,
+        User(
+          login: 'admin',
+          idRole: RoleEnum.admin,
+          password: 'admin123',
+        ).toMap(),
+      );
+    } on DatabaseException catch (error) {
+      print(error.result);
+    }
+  }
+
+  Future<void> onDropDataBase() async {
     await database.close();
     if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
       // todo

@@ -1,4 +1,6 @@
 abstract class DataBaseRequest {
+  static String deleteTable(String table) => 'DROP TABLE $table';
+
   static const String tableRole = 'role';
   static const String tableUser = 'user';
 
