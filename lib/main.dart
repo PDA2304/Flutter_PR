@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:pr1/screen_three.dart';
-import 'package:pr1/screen_one.dart';
-import 'package:pr1/screen_two.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const App());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class App extends StatelessWidget {
+  const App({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +14,6 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ScreenThree(),
     );
   }
 }
