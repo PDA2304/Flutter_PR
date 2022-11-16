@@ -43,6 +43,12 @@ dependencies:
   # Работа с папками
   path_provider: ^2.0.11
 
+  # Добавляет функциональное программирование
+  dartz: ^0.10.1
+
+  # Хэширование данных
+  crypto: ^3.0.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
