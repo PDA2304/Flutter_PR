@@ -6,5 +6,9 @@ class UserEntity {
   final String password;
   final RoleEnum idRole;
 
-  UserEntity(this.login, this.password, this.idRole);
+  UserEntity({
+    required this.login,
+    required this.password,
+    required this.idRole,
+  });
 }

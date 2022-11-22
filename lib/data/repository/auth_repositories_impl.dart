@@ -1,8 +1,9 @@
 import 'package:pr2/common/data_base_request.dart';
 import 'package:pr2/core/db/data_base_helper.dart';
+import 'package:pr2/data/model/user.dart';
 import 'package:pr2/domain/entity/role_entity.dart';
 import 'package:dartz/dartz.dart';
-import 'package:pr2/domain/repositori/auth_repositories.dart';
+import 'package:pr2/domain/repository/auth_repositories.dart';
 import 'package:sqflite/sqflite.dart';
 
 class AuthRepositoriImpl implements AuthRepositories {
@@ -34,8 +35,15 @@ class AuthRepositoriImpl implements AuthRepositories {
   }
 
   @override
-  Future<Either<String, bool>> signUp(String login, String password) {
-    // TODO: implement signUp
-    throw UnimplementedError();
+  Future<Either<String, bool>> signUp(String login, String password) async {
+    try {
+      _db.insert(
+        table,
+        User(login: login, password: password, idRole: RoleEnum.user).toMap(),
+      );
+      return Right(true);
+    } on DatabaseException catch (error) {
+      return Left('Ошибка');
+    }
   }
 }
